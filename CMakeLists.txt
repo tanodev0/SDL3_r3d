@@ -5,11 +5,37 @@ project(SDL3_r3d
     DESCRIPTION "Software 3D drawing on top of SDL_Renderer"
     LANGUAGES C)
 
-option(SDLR3D_SHARED   "Build a shared library (otherwise static)" ON)
-option(SDLR3D_EXAMPLES "Build the examples" ON)
-option(SDLR3D_TESTS    "Build the tests" ON)
+option(SDLR3D_SHARED    "Build a shared library (otherwise static)" ON)
+option(SDLR3D_EXAMPLES  "Build the examples" ON)
+option(SDLR3D_TESTS     "Build the tests" ON)
+option(SDLR3D_FETCH_SDL "Download and build SDL3 if it is not installed" ON)
+set(SDLR3D_SDL_TAG "release-3.4.20" CACHE STRING "SDL3 git tag used when SDL3 is downloaded")
 
-find_package(SDL3 REQUIRED CONFIG)
+# On Windows, put every .exe and .dll in one folder so the examples and tests
+# find SDL3.dll and SDL3_r3d.dll when they run. Only when we are the main
+# project: a parent project decides its own layout.
+if(WIN32 AND CMAKE_SOURCE_DIR STREQUAL PROJECT_SOURCE_DIR)
+    set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
+    set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
+endif()
+
+# Use an installed SDL3 if there is one; otherwise download and build it.
+find_package(SDL3 CONFIG QUIET)
+set(sdlr3d_sdl_vendored OFF)
+if(NOT SDL3_FOUND)
+    if(NOT SDLR3D_FETCH_SDL)
+        message(FATAL_ERROR "SDL3 not found. Install SDL3, set CMAKE_PREFIX_PATH, or turn on SDLR3D_FETCH_SDL.")
+    endif()
+    message(STATUS "SDL3 not found: downloading ${SDLR3D_SDL_TAG}")
+    include(FetchContent)
+    FetchContent_Declare(SDL3
+        GIT_REPOSITORY https://github.com/libsdl-org/SDL.git
+        GIT_TAG        ${SDLR3D_SDL_TAG}
+        GIT_SHALLOW    TRUE)
+    set(SDL_TEST_LIBRARY OFF CACHE BOOL "" FORCE)
+    FetchContent_MakeAvailable(SDL3)
+    set(sdlr3d_sdl_vendored ON)
+endif()
 
 # ---- Library ---------------------------------------------------------------
 
@@ -49,12 +75,23 @@ set_target_properties(SDL3_r3d PROPERTIES
     VERSION ${PROJECT_VERSION}
     SOVERSION ${PROJECT_VERSION_MAJOR})
 
-if(NOT MSVC)
+# Windows DLLs export only what is marked __declspec(dllexport). SDL's
+# SDL_DECLSPEC becomes exactly that when DLL_EXPORT is defined (SDL_ttf and
+# SDL_image do the same).
+if(WIN32 AND SDLR3D_SHARED)
+    target_compile_definitions(SDL3_r3d PRIVATE DLL_EXPORT)
+endif()
+
+if(MSVC)
+    target_compile_options(SDL3_r3d PRIVATE /W3)
+else()
     target_compile_options(SDL3_r3d PRIVATE -Wall -Wextra)
 endif()
 
 # ---- Install (so other projects can use find_package(SDL3_r3d)) -----------
+# Only with an installed SDL3: a downloaded SDL3 is not part of our package.
 
+if(NOT sdlr3d_sdl_vendored)
 include(GNUInstallDirs)
 include(CMakePackageConfigHelpers)
 
@@ -78,6 +115,7 @@ install(FILES
     ${CMAKE_CURRENT_BINARY_DIR}/SDL3_r3dConfig.cmake
     ${CMAKE_CURRENT_BINARY_DIR}/SDL3_r3dConfigVersion.cmake
     DESTINATION ${sdlr3d_cmake_dir})
+endif()
 
 # ---- Examples --------------------------------------------------------------
 

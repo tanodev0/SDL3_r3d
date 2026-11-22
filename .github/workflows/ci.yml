@@ -5,19 +5,37 @@ on:
   pull_request:
 
 jobs:
-  macos:
-    runs-on: macos-latest
+  build:
+    name: ${{ matrix.name }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          # macOS: SDL3 from Homebrew, like most Mac users.
+          - name: macOS (Homebrew SDL3)
+            os: macos-latest
+            brew: true
+          # Linux and Windows: no SDL3 installed, so CMake downloads and
+          # builds it (SDLR3D_FETCH_SDL). This is also what a new user gets.
+          - name: Linux (GCC, SDL3 built from source)
+            os: ubuntu-latest
+            cmake_args: -DSDL_UNIX_CONSOLE_BUILD=ON
+          - name: Windows (MSVC, SDL3 built from source)
+            os: windows-latest
+
     steps:
       - uses: actions/checkout@v4
 
       - name: Install SDL3
+        if: matrix.brew
         run: brew install sdl3
 
       - name: Configure
-        run: cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
+        run: cmake -S . -B build -DCMAKE_BUILD_TYPE=Release ${{ matrix.cmake_args }}
 
       - name: Build
-        run: cmake --build build
+        run: cmake --build build --config Release --parallel
 
       - name: Test
-        run: ctest --test-dir build --output-on-failure
+        run: ctest --test-dir build --build-config Release --output-on-failure

@@ -84,7 +84,9 @@ Every example is a single commented C file in [`examples/`](examples). Drag with
 
 ## Building
 
-You need SDL3 and CMake 3.16 or newer.
+You need CMake 3.16 or newer and a C compiler (GCC, Clang or MSVC). CI builds and tests every commit on Linux, macOS and Windows.
+
+If SDL3 is installed, CMake uses it. If not, CMake downloads and builds SDL3 for you, so a fresh clone builds with no extra steps.
 
 ```sh
 cmake -S . -B build
@@ -100,6 +102,9 @@ CMake options:
 | `SDLR3D_SHARED` | `ON` | build a shared library (`OFF` for static) |
 | `SDLR3D_EXAMPLES` | `ON` | build the examples |
 | `SDLR3D_TESTS` | `ON` | build the tests |
+| `SDLR3D_FETCH_SDL` | `ON` | download and build SDL3 when it is not installed |
+
+On Windows the programs land in `build/bin/Release/` (or `build/bin/` with single-config generators), next to `SDL3.dll`.
 
 The tests run without a window: they use SDL's dummy video driver and the software renderer.
 
