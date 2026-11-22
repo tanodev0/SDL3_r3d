@@ -1,0 +1,14 @@
+0.1.0:
+ * First release.
+ * Drawing: lines, points, triangles, convex polygons, 3D text labels,
+   grid, axes, function surfaces z = f(x, y).
+ * Meshes: custom vertices/indices, cube, sphere and subdivided plane.
+ * Perspective camera with orbit/zoom, point projection and screen-to-ray
+   picking.
+ * Near-plane clipping, back-face culling, flat directional lighting,
+   back-to-front depth sorting, frame statistics.
+ * Vec3/Mat4 math: translate, scale, rotate (axis and any-axis), transpose,
+   invert, look-at, perspective.
+ * CMake build with find_package(SDL3_r3d) support and tests.
+ * Six commented examples: showaxes, plot, meshes, solarsystem, custommesh,
+   cubes.

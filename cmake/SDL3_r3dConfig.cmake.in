@@ -1,0 +1,9 @@
+@PACKAGE_INIT@
+
+# SDL3_r3d needs SDL3: make sure it is found before our targets are loaded.
+include(CMakeFindDependencyMacro)
+find_dependency(SDL3 CONFIG)
+
+include("${CMAKE_CURRENT_LIST_DIR}/SDL3_r3dTargets.cmake")
+
+check_required_components(SDL3_r3d)
