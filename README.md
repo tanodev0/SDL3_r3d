@@ -1,5 +1,8 @@
 # SDL3_r3d
 
+[![CI](https://github.com/tanodev0/SDL3_r3d/actions/workflows/ci.yml/badge.svg)](https://github.com/tanodev0/SDL3_r3d/actions/workflows/ci.yml)
+[![License: zlib](https://img.shields.io/badge/license-zlib-blue.svg)](LICENSE.txt)
+
 3D drawing for SDL3 without writing a single shader.
 
 You want a rotating cube, a function plot or a wireframe scene. With plain SDL3, the 2D `SDL_Renderer` can't do it, and the GPU API asks you for shaders, pipelines and buffers first. SDL3_r3d gives you a third option: you describe the scene in 3D and draw it with the `SDL_Renderer` you already use.

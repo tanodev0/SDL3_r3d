@@ -10,5 +10,7 @@
  * Vec3/Mat4 math: translate, scale, rotate (axis and any-axis), transpose,
    invert, look-at, perspective.
  * CMake build with find_package(SDL3_r3d) support and tests.
+ * Builds and passes the tests on Linux (GCC), macOS (Clang) and Windows
+   (MSVC); CMake downloads SDL3 when it is not installed.
  * Six commented examples: showaxes, plot, meshes, solarsystem, custommesh,
    cubes.
