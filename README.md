@@ -6,7 +6,9 @@ You want a rotating cube, a function plot or a wireframe scene. With plain SDL3,
 
 The library runs the 3D math on the CPU (view and perspective matrices, near-plane clipping, lighting, depth sorting) and draws the result with `SDL_RenderGeometry` and `SDL_RenderLine`. It works with every SDL3 render backend, including the software renderer.
 
-![A lit function surface with a grid and labelled axes, drawn with SDL3_r3d](docs/showaxes.png)
+![The camera orbiting a lit function surface with a grid and labelled axes, drawn with SDL3_r3d](docs/orbit.gif)
+
+*`examples/showaxes.c`, with the camera moved by `R3D_OrbitCamera`.*
 
 > **Unofficial.** SDL3_r3d is a third-party library built on top of SDL3. It is not part of SDL and the SDL project does not endorse it.
 
